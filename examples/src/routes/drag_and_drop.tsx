@@ -32,27 +32,37 @@ function RouteComponent() {
     showRoot: false,
   });
 
-  const moveNode = useCallback((nodeId: string, currentParentId: string, newParentId: string) => {
-    setTreeData((state) => {
-      const currentParent = { ...state[currentParentId] };
+  const moveNode = useCallback(
+    (nodeId: string, currentParentId: string, newParentId: string) => {
+      setTreeData((state) => {
+        const currentParent = { ...state[currentParentId] };
 
-      const nodeIndexInParent = currentParent.pets!.findIndex((id) => id === nodeId);
-      currentParent.pets!.splice(nodeIndexInParent, 1);
+        currentParent.pets = currentParent.pets!.filter((id) => id !== nodeId);
 
-      const newParent = { ...state[newParentId] };
-      if (!newParent.pets) {
-        newParent.pets = [];
+        const newParent = { ...state[newParentId] };
+        if (!newParent.pets) {
+          newParent.pets = [];
+        }
+        newParent.pets = [...newParent.pets, nodeId];
+
+        return {
+          ...state,
+          root: { ...state.root },
+          [currentParentId]: currentParent,
+          [newParentId]: newParent,
+        };
+      });
+
+      // Open the new parent if it's not open currently
+      if (!expandedState[newParentId]) {
+        setExpandedState((state) => ({
+          ...state,
+          [newParentId]: true,
+        }));
       }
-      newParent.pets = [...newParent.pets, nodeId];
-
-      return {
-        ...state,
-        root: { ...state.root },
-        [currentParentId]: currentParent,
-        [newParentId]: newParent,
-      };
-    });
-  }, []);
+    },
+    [expandedState]
+  );
 
   return (
     <div>
