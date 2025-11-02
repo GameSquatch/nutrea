@@ -60,13 +60,21 @@ interface UseTreeParams<TData> {
 }
 
 export type TreeDataNode<TData> = TData & {
+  /** Unique identifier of a tree node */
   id: string;
+  /** The level within the tree structure this node is in */
   level: number;
+  /** The id of this node's parent */
   parentId?: string;
+  /** Trigger the onExpandedStateChange callback with this node toggled */
   toggleExpanded: () => void;
+  /** The expanded state of this node */
   isExpanded: boolean;
+  /** Trigger the onSelection callback and pass this node to it */
   select: () => void;
+  /** A method to compare the selected id with this node's id. I might remove this */
   isSelected: (selectedId: string) => boolean;
+  /** True if not a leaf node and the children list is not empty */
   hasChildren: boolean;
 };
 
@@ -140,7 +148,7 @@ export const useTree = <TData>({
     (node: TData) => {
       const nodeId = accessId(node);
       // If memoized since the last render, return the previously obtained children.
-      if (getChildren && childrenMemoRef.current[nodeId]) {
+      if ((getChildren || childSort) && childrenMemoRef.current[nodeId]) {
         return childrenMemoRef.current[nodeId];
       }
 
@@ -149,7 +157,7 @@ export const useTree = <TData>({
       if (childSort) {
         children?.sort(childSort);
       }
-      if (getChildren) {
+      if (getChildren || childSort) {
         childrenMemoRef.current[nodeId] = children;
       }
       return children;
@@ -170,7 +178,7 @@ export const useTree = <TData>({
 
     const traverse = (node: TData, level: number = 0, parentId?: string) => {
       const nodeId = accessId(node);
-      const newNode = {
+      const newNode: TreeDataNode<TData> = {
         ...node,
         id: nodeId,
         level,
