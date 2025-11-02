@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
-  component: Home
+  component: Home,
 });
 
 function Home() {
@@ -20,6 +20,9 @@ function Home() {
         </li>
         <li>
           <Link to="/key_navigation">Key Navigation</Link>
+        </li>
+        <li>
+          <Link to="/drag_and_drop">Drag And Drop</Link>
         </li>
       </ul>
     </div>

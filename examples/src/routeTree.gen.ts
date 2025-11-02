@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VirtualizedRouteImport } from './routes/virtualized'
 import { Route as Key_navigationRouteImport } from './routes/key_navigation'
 import { Route as Edit_nameRouteImport } from './routes/edit_name'
+import { Route as Drag_and_dropRouteImport } from './routes/drag_and_drop'
 import { Route as BasicRouteImport } from './routes/basic'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const Edit_nameRoute = Edit_nameRouteImport.update({
   path: '/edit_name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Drag_and_dropRoute = Drag_and_dropRouteImport.update({
+  id: '/drag_and_drop',
+  path: '/drag_and_drop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BasicRoute = BasicRouteImport.update({
   id: '/basic',
   path: '/basic',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/basic': typeof BasicRoute
+  '/drag_and_drop': typeof Drag_and_dropRoute
   '/edit_name': typeof Edit_nameRoute
   '/key_navigation': typeof Key_navigationRoute
   '/virtualized': typeof VirtualizedRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/basic': typeof BasicRoute
+  '/drag_and_drop': typeof Drag_and_dropRoute
   '/edit_name': typeof Edit_nameRoute
   '/key_navigation': typeof Key_navigationRoute
   '/virtualized': typeof VirtualizedRoute
@@ -59,19 +67,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/basic': typeof BasicRoute
+  '/drag_and_drop': typeof Drag_and_dropRoute
   '/edit_name': typeof Edit_nameRoute
   '/key_navigation': typeof Key_navigationRoute
   '/virtualized': typeof VirtualizedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/basic' | '/edit_name' | '/key_navigation' | '/virtualized'
+  fullPaths:
+    | '/'
+    | '/basic'
+    | '/drag_and_drop'
+    | '/edit_name'
+    | '/key_navigation'
+    | '/virtualized'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/basic' | '/edit_name' | '/key_navigation' | '/virtualized'
+  to:
+    | '/'
+    | '/basic'
+    | '/drag_and_drop'
+    | '/edit_name'
+    | '/key_navigation'
+    | '/virtualized'
   id:
     | '__root__'
     | '/'
     | '/basic'
+    | '/drag_and_drop'
     | '/edit_name'
     | '/key_navigation'
     | '/virtualized'
@@ -80,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BasicRoute: typeof BasicRoute
+  Drag_and_dropRoute: typeof Drag_and_dropRoute
   Edit_nameRoute: typeof Edit_nameRoute
   Key_navigationRoute: typeof Key_navigationRoute
   VirtualizedRoute: typeof VirtualizedRoute
@@ -108,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Edit_nameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drag_and_drop': {
+      id: '/drag_and_drop'
+      path: '/drag_and_drop'
+      fullPath: '/drag_and_drop'
+      preLoaderRoute: typeof Drag_and_dropRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/basic': {
       id: '/basic'
       path: '/basic'
@@ -128,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BasicRoute: BasicRoute,
+  Drag_and_dropRoute: Drag_and_dropRoute,
   Edit_nameRoute: Edit_nameRoute,
   Key_navigationRoute: Key_navigationRoute,
   VirtualizedRoute: VirtualizedRoute,
