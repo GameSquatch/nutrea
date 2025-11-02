@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from "react";
 
 interface UseTreeParams<TData> {
   /**
@@ -26,14 +26,14 @@ interface UseTreeParams<TData> {
    * will consequently call this handler with the new expanded state. You should update your
    * expanded state accordingly.
    */
-  onExpandedStateChange: (newState: Record<string, boolean>) => void;
+  onExpandedStateChange?: (newState: Record<string, boolean>) => void;
 
   /**
    * When a node's {@link TreeDataNode.select | select} function is called, it will
    * consequently call this handler with the id of the node that was selected. If you have
    * an external selection state, you should call it.
    */
-  onSelection: (node: TData) => void;
+  onSelection?: (node: TData) => void;
 
   /**
    * By default `showRoot` is true. If your root node is not meant to be displayed and is
@@ -91,7 +91,7 @@ export const useTree = <TData>({
   showRoot = true,
   searchTerm,
   searchMatch,
-  childSort
+  childSort,
 }: UseTreeParams<TData>): {
   visibleList: TreeDataNode<TData>[];
   /**
@@ -167,6 +167,11 @@ export const useTree = <TData>({
 
   const toggleExpanded = useCallback(
     (nodeId: string) => {
+      if (!onExpandedStateChange) {
+        throw new Error(
+          "If you want to call toggleExpanded on a node, define the onExpandedStateChange prop when calling useTree"
+        );
+      }
       onExpandedStateChange({ ...expandedState, [nodeId]: !expandedState[nodeId] });
     },
     [expandedState, onExpandedStateChange]
@@ -185,9 +190,14 @@ export const useTree = <TData>({
         parentId,
         toggleExpanded: () => toggleExpanded(nodeId),
         isExpanded: expandedState[nodeId],
-        select: () => onSelection(node),
+        select: () => {
+          if (!onSelection) {
+            throw new Error("If you want to call select on a node, define the onSelection prop when calling useTree");
+          }
+          onSelection(node);
+        },
         isSelected: (selectedId: string) => selectedId === nodeId,
-        hasChildren: false
+        hasChildren: false,
       };
       searchPath.push(newNode);
 
@@ -230,17 +240,17 @@ export const useTree = <TData>({
 
       let nextIndex: number = currentIndex;
       switch (e.key) {
-        case 'ArrowUp':
+        case "ArrowUp":
           if (currentIndex - 1 >= 0) {
             nextIndex = currentIndex - 1;
           }
           break;
-        case 'ArrowDown':
+        case "ArrowDown":
           if (currentIndex + 1 < visibleList.length) {
             nextIndex = currentIndex + 1;
           }
           break;
-        case 'ArrowLeft': {
+        case "ArrowLeft": {
           if (node.isExpanded) {
             node.toggleExpanded();
             break;
@@ -255,7 +265,7 @@ export const useTree = <TData>({
           }
           break;
         }
-        case 'ArrowRight':
+        case "ArrowRight":
           if (!node.isExpanded) {
             node.toggleExpanded();
             break;
