@@ -20,9 +20,9 @@ Data management is left completely to the user as well, meaning this hook is not
 
 ## Demos and Examples
 
-Some basic examples are shown below. View some [working demos here](https://ewilliams-zoot.github.io/nutrea/).
+Some basic examples are shown below. View some [working demos here](https://gamesquatch.github.io/nutrea/).
 
-The code for the demos is [located here](https://github.com/ewilliams-zoot/nutrea/tree/main/examples/src/routes). You can also pull the repo and run the demos.
+The code for the demos is [located here](https://github.com/gamesquatch/nutrea/tree/main/examples/src/routes). You can also pull the repo and run the demos.
 
 I hope to expand this list of examples as time goes on, but these should be sufficient to get the idea.
 
@@ -44,7 +44,7 @@ npm i nutrea
 A basic tree with no virtualization or key navigation. The data structure here is nested with default field names that the library supports: `id` and `children`. This component is managing its own expanded and selected states.
 
 ```jsx
-import { useTree } from 'nutrea';
+import { useTree } from "nutrea";
 
 const BasicTree = memo(function BasicTree() {
   const [selectedNodeId, setSelectedNodeId] = useState(null);
@@ -52,24 +52,24 @@ const BasicTree = memo(function BasicTree() {
   const [expandedState, setExpandedState] = useState({});
 
   const [treeData] = useState({
-    id: 'root',
-    name: 'Root',
+    id: "root",
+    name: "Root",
     children: [
       {
-        id: 'folder',
-        name: 'Folder'
+        id: "folder",
+        name: "Folder",
       },
       {
-        id: 'folder2',
-        name: 'Folder Two',
+        id: "folder2",
+        name: "Folder Two",
         children: [
           {
-            id: 'nestedItem',
-            name: 'Nested Item'
-          }
-        ]
-      }
-    ]
+            id: "nestedItem",
+            name: "Nested Item",
+          },
+        ],
+      },
+    ],
   });
 
   const expandAllExample = useCallback(() => {
@@ -96,11 +96,11 @@ const BasicTree = memo(function BasicTree() {
     data: treeData,
     expandedState,
     onExpandedStateChange: setExpandedState,
-    onSelection: selectNode
+    onSelection: selectNode,
   });
 
   return (
-    <div role="tree" ref={scrollableRef} style={{ height: '600px', overflow: 'auto' }}>
+    <div role="tree" ref={scrollableRef} style={{ height: "600px", overflow: "auto" }}>
       {visibleNodes.map((node) => {
         return (
           <div
@@ -111,10 +111,10 @@ const BasicTree = memo(function BasicTree() {
             key={node.id}
             style={{
               paddingLeft: `${node.level * 16 + 8}px`,
-              display: 'flex',
-              height: '30px',
-              alignItems: 'center',
-              border: node.id === selectedNodeId ? '1px dashed blue' : undefined
+              display: "flex",
+              height: "30px",
+              alignItems: "center",
+              border: node.id === selectedNodeId ? "1px dashed blue" : undefined,
             }}
           >
             <span
@@ -126,9 +126,9 @@ const BasicTree = memo(function BasicTree() {
                     }
                   : undefined
               }
-              style={{ display: 'inline-block', width: '20px', height: '25px' }}
+              style={{ display: "inline-block", width: "20px", height: "25px" }}
             >
-              {node.hasChildren ? (node.isExpanded ? '-' : '+') : undefined}
+              {node.hasChildren ? (node.isExpanded ? "-" : "+") : undefined}
             </span>
             {node.name}
           </div>
@@ -150,7 +150,7 @@ const BasicTree = memo(function BasicTree() {
 
   ```ts
   useTree({
-    getId: ({ uniqueId }) => uniqueId
+    getId: ({ uniqueId }) => uniqueId,
   });
   ```
 
@@ -158,15 +158,15 @@ const BasicTree = memo(function BasicTree() {
   ```ts
   const [data] = useState({
     root: {
-      id: 'root',
-      childIds: ['a', 'b']
+      id: "root",
+      childIds: ["a", "b"],
     },
-    a: { id: 'a' },
-    b: { id: 'b' }
+    a: { id: "a" },
+    b: { id: "b" },
   });
   useTree({
     data: data.root,
-    getChildren: (node) => node.childIds?.map((childId) => data[childId])
+    getChildren: (node) => node.childIds?.map((childId) => data[childId]),
   });
   ```
 - `props.expandedState`: An object where the keys are node ids and the values are booleans. A value of `true` will tell the hook to traverse into that node's children and attempt to build them into the result list. The result of expanding a node will therefore include its children in the list so they can be rendered as you want. The reverse is true when a node is collapsed (expanded value if `false`).
