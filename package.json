@@ -29,7 +29,7 @@
     "src"
   ],
   "scripts": {
-    "prepare": "npm run build",
+    "prepublishOnly": "npm run build && npm run build --workspace examples",
     "build": "tsc -b",
     "lint": "eslint .",
     "test": "vitest",
