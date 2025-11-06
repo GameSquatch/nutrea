@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.3
+
+- Make `expandedState` optional
+
+When you omit the expanded state, it will assume the tree is statically always expanded.
+
 ## 1.0.2
 
 - Make `onExpandedStateChange` prop optional
