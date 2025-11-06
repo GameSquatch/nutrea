@@ -4,7 +4,7 @@ import { useTree } from '../../../src/tree_hook/use_tree';
 import { useCallback, useState } from 'react';
 
 export const Route = createFileRoute('/basic')({
-  component: RouteComponent
+  component: RouteComponent,
 });
 
 interface TreeNode {
@@ -23,7 +23,7 @@ function RouteComponent() {
     children: [
       {
         id: 'folder',
-        name: 'Folder'
+        name: 'Folder',
       },
       {
         id: 'folder2',
@@ -31,11 +31,11 @@ function RouteComponent() {
         children: [
           {
             id: 'nestedItem',
-            name: 'Nested Item'
-          }
-        ]
-      }
-    ]
+            name: 'Nested Item',
+          },
+        ],
+      },
+    ],
   });
 
   const selectNode = useCallback((node: TreeNode) => {
@@ -46,7 +46,7 @@ function RouteComponent() {
     data: treeData,
     expandedState,
     onExpandedStateChange: setExpandedState,
-    onSelection: selectNode
+    onSelection: selectNode,
   });
 
   return (
@@ -66,7 +66,7 @@ function RouteComponent() {
                 display: 'flex',
                 height: '30px',
                 alignItems: 'center',
-                border: node.id === selectedNodeId ? '1px dashed blue' : undefined
+                border: node.id === selectedNodeId ? '1px dashed blue' : undefined,
               }}
             >
               {node.hasChildren ? (

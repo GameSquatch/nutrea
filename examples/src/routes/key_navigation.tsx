@@ -4,7 +4,7 @@ import { useTree, type TreeDataNode } from '../../../src/tree_hook/use_tree';
 import { createNameTree } from '../data/generate_names';
 
 export const Route = createFileRoute('/key_navigation')({
-  component: RouteComponent
+  component: RouteComponent,
 });
 
 interface TreeNode {
@@ -29,7 +29,7 @@ function RouteComponent() {
     expandedState,
     onExpandedStateChange: setExpandedState,
     onSelection: selectNode,
-    showRoot: false
+    showRoot: false,
   });
 
   return (
@@ -82,7 +82,7 @@ const TreeItem: FC<{
         height: '30px',
         alignItems: 'center',
         border: node.id === selectedNodeId ? '1px dashed blue' : undefined,
-        width: '100%'
+        width: '100%',
       }}
       onKeyDown={navigateWithKey}
     >

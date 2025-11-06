@@ -6,7 +6,7 @@ import { createNameTree } from '../data/generate_names';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 export const Route = createFileRoute('/virtualized')({
-  component: RouteComponent
+  component: RouteComponent,
 });
 
 interface TreeNode {
@@ -32,14 +32,14 @@ function RouteComponent() {
     expandedState,
     onExpandedStateChange: setExpandedState,
     onSelection: selectNode,
-    showRoot: false
+    showRoot: false,
   });
 
   const virtual = useVirtualizer({
     getScrollElement: () => scrollableRef.current,
     count: visibleNodes.length,
     estimateSize: () => 30,
-    overscan: 5
+    overscan: 5,
   });
 
   return (
@@ -65,7 +65,7 @@ function RouteComponent() {
                   border: node.id === selectedNodeId ? '1px dashed blue' : undefined,
                   position: 'absolute',
                   left: 0,
-                  top: `${vi.start}px`
+                  top: `${vi.start}px`,
                 }}
               >
                 {node.hasChildren ? (

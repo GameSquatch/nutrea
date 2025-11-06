@@ -5,7 +5,7 @@ import { useTree, type TreeDataNode } from '../../../src/tree_hook/use_tree';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 export const Route = createFileRoute('/edit_name')({
-  component: RouteComponent
+  component: RouteComponent,
 });
 
 interface TreeNode {
@@ -27,12 +27,12 @@ function RouteComponent() {
       setTreeData({
         ...treeData,
         root: {
-          ...treeData.root
+          ...treeData.root,
         },
         [node.id]: {
           ...node,
-          name: newName
-        }
+          name: newName,
+        },
       });
     },
     [treeData]
@@ -51,14 +51,14 @@ function RouteComponent() {
     expandedState,
     onExpandedStateChange: setExpandedState,
     onSelection: selectNode,
-    showRoot: false
+    showRoot: false,
   });
 
   const virtual = useVirtualizer({
     getScrollElement: () => scrollableRef.current,
     count: visibleNodes.length,
     estimateSize: () => 30,
-    overscan: 5
+    overscan: 5,
   });
 
   return (
@@ -121,7 +121,7 @@ const TreeItem: FC<{
         position: 'absolute',
         left: 0,
         top: `${start}px`,
-        width: '100%'
+        width: '100%',
       }}
     >
       {node.hasChildren ? (
