@@ -1,6 +1,6 @@
-import { useTree } from '../src/index';
-import { expect, test } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { useTree } from "../src/index";
+import { expect, test } from "vitest";
+import { renderHook } from "@testing-library/react";
 
 type TreeNode = {
   id: string;
@@ -9,65 +9,71 @@ type TreeNode = {
 };
 
 const treeData: TreeNode = {
-  id: 'root',
-  name: 'Root',
+  id: "root",
+  name: "Root",
   children: [
     {
-      id: 'folder',
-      name: 'Folder'
+      id: "folder",
+      name: "Folder",
     },
     {
-      id: 'folder2',
-      name: 'Folder Two',
+      id: "folder2",
+      name: "Folder Two",
       children: [
         {
-          id: 'nestedItem',
-          name: 'Nested Item'
-        }
-      ]
-    }
-  ]
+          id: "nestedItem",
+          name: "Nested Item",
+        },
+      ],
+    },
+  ],
 } as const;
 
-test('collapsed nodes are not included', () => {
+test("Collapsed nodes are not included", () => {
   const expandedState: Record<string, boolean> = {
-    root: true
+    root: true,
   };
 
   const { result } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
     initialProps: {
       data: treeData,
       expandedState,
-      onExpandedStateChange: () => {},
-      onSelection: () => {}
-    }
+    },
   });
 
   expect(result.current.visibleList.length).toBe(3);
 });
 
-test('all expanded to be included', () => {
+test("Not specifying expanded states defaults to all expanded", () => {
+  const { result } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
+    initialProps: {
+      data: treeData,
+    },
+  });
+
+  expect(result.current.visibleList.length).toBe(4);
+});
+
+test("All expanded to be included", () => {
   const expandedState: Record<string, boolean> = {
     root: true,
-    folder2: true
+    folder2: true,
   };
 
   const { result } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
     initialProps: {
       data: treeData,
       expandedState,
-      onExpandedStateChange: () => {},
-      onSelection: () => {}
-    }
+    },
   });
 
   expect(result.current.visibleList.length).toBe(4);
 });
 
-test('show root excludes root node when all are expanded', () => {
+test("Show root excludes root node when all are expanded", () => {
   const expandedState: Record<string, boolean> = {
     root: true,
-    folder2: true
+    folder2: true,
   };
 
   const { result } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
@@ -75,82 +81,109 @@ test('show root excludes root node when all are expanded', () => {
       data: treeData,
       expandedState,
       showRoot: false,
-      onExpandedStateChange: () => {},
-      onSelection: () => {}
-    }
+    },
   });
 
   expect(result.current.visibleList.length).toBe(3);
-  expect(result.current.visibleList[0].id).toBe('folder');
+  expect(result.current.visibleList[0].id).toBe("folder");
 });
 
-test('passing new expanded state updates list', () => {
-  const expandedState: Record<string, boolean> = {
-    root: true
+test("Passing new expanded state updates list", () => {
+  let expandedState: Record<string, boolean> = {
+    root: true,
   };
 
   const { result, rerender } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
     initialProps: {
       data: treeData,
       expandedState,
-      onExpandedStateChange: () => {},
-      onSelection: () => {}
-    }
+      onExpandedStateChange: (newState: Record<string, boolean>) => {
+        expandedState = newState;
+      },
+    },
   });
 
-  expandedState.folder2 = true;
+  expect(result.current.visibleList.length).toBe(3);
+
+  const folder2 = result.current.visibleList.find((node) => node.id === "folder2");
+  folder2!.toggleExpanded();
 
   rerender({
     data: treeData,
     expandedState: { ...expandedState },
     onExpandedStateChange: () => {},
-    onSelection: () => {}
   });
 
   expect(result.current.visibleList.length).toBe(4);
 });
 
-test('using filter reduces the list', () => {
+test("Expanded state change callback not called when state is not passed", () => {
+  let mutVal = "hello";
+
+  const { result } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
+    initialProps: {
+      data: treeData,
+      onExpandedStateChange: () => {
+        mutVal = "world";
+      },
+    },
+  });
+
+  expect(mutVal).toBe("hello");
+
+  const folder2 = result.current.visibleList.find((node) => node.id === "folder2");
+  folder2!.toggleExpanded();
+
+  expect(mutVal).toBe("hello");
+});
+
+test("Calling node select invokes callback", () => {
   const expandedState: Record<string, boolean> = {
     root: true,
-    folder2: true
   };
+  let selectedId = "";
 
+  const { result } = renderHook((initialProps) => useTree<TreeNode>({ ...initialProps }), {
+    initialProps: {
+      data: treeData,
+      expandedState,
+      onSelection: (node: TreeNode) => {
+        selectedId = node.id;
+      },
+    },
+  });
+
+  const folder2 = result.current.visibleList.find((node) => node.id === "folder2");
+  folder2!.select();
+
+  expect(selectedId).toBe("folder2");
+});
+
+test("Using filter reduces the list", () => {
   const { result } = renderHook(
-    (initialProps: {
-      data: TreeNode;
-      expandedState: Record<string, boolean>;
-      onExpandedStateChange: (newState: Record<string, boolean>) => void;
-      onSelection: (node: TreeNode) => void;
-      searchTerm: string;
-      searchMatch: (node: TreeNode, term: string) => boolean;
-    }) => useTree<TreeNode>({ ...initialProps }),
+    (initialProps: { data: TreeNode; searchTerm: string; searchMatch: (node: TreeNode, term: string) => boolean }) =>
+      useTree<TreeNode>({ ...initialProps }),
     {
       initialProps: {
         data: treeData,
-        expandedState,
-        onExpandedStateChange: () => {},
-        onSelection: () => {},
-        searchTerm: 'Two',
-        searchMatch: (node, term) => node.name.includes(term)
-      }
+        searchTerm: "Two",
+        searchMatch: (node, term) => node.name.includes(term),
+      },
     }
   );
 
   expect(result.current.visibleList.length).toBe(2);
 });
 
-test('passing childSort reorganizes children', () => {
+test("Passing childSort reorganizes children", () => {
   const expandedState: Record<string, boolean> = {
-    root: true
+    root: true,
   };
 
   const { result } = renderHook(
     (initialProps: {
       data: TreeNode;
       expandedState: Record<string, boolean>;
-      onExpandedStateChange: (newState: Record<string, boolean>) => void;
-      onSelection: (node: TreeNode) => void;
       showRoot: boolean;
       childSort: (nodeA: TreeNode, nodeB: TreeNode) => number;
     }) => useTree<typeof treeData>({ ...initialProps }),
@@ -159,62 +192,49 @@ test('passing childSort reorganizes children', () => {
         data: treeData,
         expandedState,
         showRoot: false,
-        onExpandedStateChange: () => {},
-        onSelection: () => {},
-        childSort: (nodeA, nodeB) => nodeB.name.localeCompare(nodeA.name)
-      }
+        childSort: (nodeA, nodeB) => nodeB.name.localeCompare(nodeA.name),
+      },
     }
   );
 
-  expect(result.current.visibleList[0].name).toBe('Folder Two');
+  expect(result.current.visibleList[0].name).toBe("Folder Two");
 });
 
 type CustomTreeNode = { qx: string; label: string; childrenQx?: string[] };
 const customTreeData: Record<string, CustomTreeNode> = {
   root: {
-    qx: 'root',
-    label: 'Root',
-    childrenQx: ['folder', 'folder2']
+    qx: "root",
+    label: "Root",
+    childrenQx: ["folder", "folder2"],
   },
   folder: {
-    qx: 'folder',
-    label: 'Folder'
+    qx: "folder",
+    label: "Folder",
   },
   folder2: {
-    qx: 'folder2',
-    label: 'Folder Two',
-    childrenQx: ['nestedItem']
+    qx: "folder2",
+    label: "Folder Two",
+    childrenQx: ["nestedItem"],
   },
   nestedItem: {
-    qx: 'nestedItem',
-    label: 'Nested Item'
-  }
+    qx: "nestedItem",
+    label: "Nested Item",
+  },
 } as const;
 
-test('using custom data with accessor props builds a full list', () => {
-  const expandedState: Record<string, boolean> = {
-    root: true,
-    folder2: true
-  };
-
+test("Using custom data with accessor props builds a full list", () => {
   const { result } = renderHook(
     (initialProps: {
       data: CustomTreeNode;
-      expandedState: Record<string, boolean>;
       getId: (node: CustomTreeNode) => string;
       getChildren: (node: CustomTreeNode) => CustomTreeNode[] | undefined;
-      onExpandedStateChange: (newState: Record<string, boolean>) => void;
-      onSelection: (node: CustomTreeNode) => void;
     }) => useTree<CustomTreeNode>({ ...initialProps }),
     {
       initialProps: {
         data: customTreeData.root,
-        expandedState,
         getId: (node) => node.qx,
         getChildren: (node) => node.childrenQx?.map((id) => customTreeData[id]),
-        onExpandedStateChange: () => {},
-        onSelection: () => {}
-      }
+      },
     }
   );
 

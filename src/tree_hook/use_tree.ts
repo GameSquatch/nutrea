@@ -17,9 +17,10 @@ interface UseTreeParams<TData> {
   getChildren?: (dataNode: TData) => undefined | TData[];
 
   /**
-   * A map of the ids of nodes with a key indicating whether that node is expanded or not.
+   * A map of the ids of nodes with a key indicating whether that node is expanded or not. If not passed,
+   * the tree will be fully expanded by default.
    */
-  expandedState: Record<string, boolean>;
+  expandedState?: Record<string, boolean>;
 
   /**
    * When a node's {@link TreeDataNode.toggleExpanded | toggleExpanded} function is called, it
@@ -172,7 +173,9 @@ export const useTree = <TData>({
           "If you want to call toggleExpanded on a node, define the onExpandedStateChange prop when calling useTree"
         );
       }
-      onExpandedStateChange({ ...expandedState, [nodeId]: !expandedState[nodeId] });
+      if (expandedState) {
+        onExpandedStateChange({ ...expandedState, [nodeId]: !expandedState[nodeId] });
+      }
     },
     [expandedState, onExpandedStateChange]
   );
@@ -183,13 +186,20 @@ export const useTree = <TData>({
 
     const traverse = (node: TData, level: number = 0, parentId?: string) => {
       const nodeId = accessId(node);
+      let expanded;
+      if (!expandedState) {
+        expanded = true;
+      } else {
+        expanded = expandedState[nodeId];
+      }
+
       const newNode: TreeDataNode<TData> = {
         ...node,
         id: nodeId,
         level,
         parentId,
         toggleExpanded: () => toggleExpanded(nodeId),
-        isExpanded: expandedState[nodeId],
+        isExpanded: expanded,
         select: () => {
           if (!onSelection) {
             throw new Error("If you want to call select on a node, define the onSelection prop when calling useTree");
@@ -216,7 +226,7 @@ export const useTree = <TData>({
       const children = getMemoChildren(node);
       newNode.hasChildren = children !== undefined && children.length > 0;
       // If the node doesn't have children or the node is collapsed, we don't want to traverse any further
-      if (children !== undefined && (expandedState[nodeId] || searchTerm)) {
+      if (children !== undefined && (expanded || searchTerm)) {
         children.forEach((node) => traverse(node, level + 1, nodeId));
       }
       searchPath.pop();
